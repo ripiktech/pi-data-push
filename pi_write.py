@@ -1,12 +1,31 @@
 from requests.auth import HTTPBasicAuth
 from requests_kerberos import HTTPKerberosAuth
 import requests
+import json
 
 
 OSI_AF_DATABASE = 'HPF'
 OSI_AF_ELEMENT = 'PULP PLANT'
 OSI_AF_ELEMENT_CHILD = 'LAB DATA'
 OSI_AF_ATTRIBUTE_TAG = 'HPF-PI-CH-UPTO-1/8'
+
+def call_headers(include_content_type):
+    """ Create API call headers
+        @includeContentType boolean: Flag determines whether or not the
+        content-type header is included
+    """
+    if include_content_type is True:
+        header = {
+            'content-type': 'application/json',
+            'X-Requested-With': 'XmlHttpRequest'
+        }
+    else:
+        header = {
+            'X-Requested-With': 'XmlHttpRequest'
+        }
+
+    return 
+
 def call_security_method(security_method, user_name, user_password):
     """ Create API call security method
         @param security_method string: Security method to use: basic or kerberos
@@ -54,7 +73,23 @@ def write_single_value(piwebapi_url, asset_server, user_name, user_password,
     if response.status_code == 200:
         print('Connected with PI server')
         data = json.loads(response.text)
-        print(data)
+         #  Create the data for this call
+        data_value = random.randint(1, 100)
+        request_body = {
+            'Value': data_value
+        }
+
+        #  Create the header
+        header = call_headers(True)
+
+        #  Write the single value to the tag
+        response = requests.post(data['Links']['Value'], auth=security_method,
+                                 verify=verify_ssl, json=request_body, headers=header)
+
+        if response.status_code == 202:
+            print('Attribute SampleTag write value ' + str(data_value))
+        else:
+            print(response.status_code, response.reason, response.text)
     else:
         print(response.status_code, response.reason, response.text)
 
