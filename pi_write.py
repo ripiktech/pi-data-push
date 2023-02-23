@@ -97,5 +97,5 @@ piwebapi_url = 'https://gilvsfhrh-pi1/piwebapi/'
 asset_server = 'GILVSFHRH-PI1'
 username = 's.k'
 password = '9!qAtW50#'
-piwebapi_security_method = 'basic'
+piwebapi_security_method = ''
 write_single_value(piwebapi_url, asset_server, username, password, piwebapi_security_method, False)
